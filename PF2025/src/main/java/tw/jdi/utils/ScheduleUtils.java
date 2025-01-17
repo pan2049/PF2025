@@ -12,7 +12,6 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,9 +29,6 @@ public class ScheduleUtils {
 	@Autowired
 	private Scheduler scheduler;
 
-	private Logger logger = SharedUtils.getLogger(this.getClass());
-
-	
 	public class ScheduleJob implements Job {
 
 		@Override
@@ -42,7 +38,7 @@ public class ScheduleUtils {
 			try {
 				scheduleMission.doJob();
 			} catch (Exception e) {
-				logger.error(e.getLocalizedMessage());
+				SharedUtils.getLogger(this.getClass()).error(e.getLocalizedMessage());
 				e.printStackTrace();
 			}
 		}
@@ -76,9 +72,9 @@ public class ScheduleUtils {
 		try {
 			scheduler.scheduleJob(jobDetail, trigger);
 			scheduler.start();
-			logger.info("[DEPLOY_SCHEDULE] " + info + " -> START");
+			SharedUtils.getLogger(this.getClass()).info("[DEPLOY_SCHEDULE] " + info + " -> START");
 		} catch (SchedulerException e) {
-			logger.error(e.getLocalizedMessage() + " -> " + jobKeyStr);
+			SharedUtils.getLogger(this.getClass()).error(e.getLocalizedMessage() + " -> " + jobKeyStr);
 		}
 	}
 
@@ -93,9 +89,9 @@ public class ScheduleUtils {
 	public void removeSchedule(String jobKeyStr, String info) {
 		try {
 			scheduler.deleteJob(JobKey.jobKey(jobKeyStr));
-			logger.info("[REMOVE_SCHEDULE] " + info + " -> CLEAR");
+			SharedUtils.getLogger(this.getClass()).info("[REMOVE_SCHEDULE] " + info + " -> CLEAR");
 		} catch (SchedulerException e) {
-			logger.error(e.getLocalizedMessage() + " -> " + jobKeyStr);
+			SharedUtils.getLogger(this.getClass()).error(e.getLocalizedMessage() + " -> " + jobKeyStr);
 		}
 	}
 
@@ -111,7 +107,7 @@ public class ScheduleUtils {
 		try {
 			return scheduler.checkExists(JobKey.jobKey(jobKeyStr));
 		} catch (SchedulerException e) {
-			logger.error(e.getLocalizedMessage() + " -> " + jobKeyStr);
+			SharedUtils.getLogger(this.getClass()).error(e.getLocalizedMessage() + " -> " + jobKeyStr);
 			return false;
 		}
 	}

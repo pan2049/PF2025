@@ -20,7 +20,7 @@ import com.serotonin.bacnet4j.util.RequestUtils;
 
 import jakarta.annotation.Resource;
 import tw.jdi.service.ScheduleMission;
-import tw.jdi.utils.Bacnet4j;
+import tw.jdi.utils.connect.Bacnet4j;
 
 /**
  * Bacnet設備讀取，這邊國震設備比較單純，每台處理機底下只有一個點，所以之後經過測試後可以選擇將線程合併減少開銷

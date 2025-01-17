@@ -1,4 +1,4 @@
-package tw.jdi.utils;
+package tw.jdi.utils.connect;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -16,7 +16,8 @@ import com.serotonin.modbus4j.exception.ModbusTransportException;
 import com.serotonin.modbus4j.ip.IpParameters;
 import com.serotonin.modbus4j.locator.BaseLocator;
 
-import tw.jdi.entity.po.Format;
+import tw.jdi.entity.po.ModbusPoint.ModbusFormat;
+import tw.jdi.utils.SharedUtils;
 
 
 /**
@@ -98,7 +99,7 @@ public class Modbus4j {
 	 * @param format
 	 * @return
 	 */
-	public BigDecimal readHoldingRegister(ModbusMaster modbusMastar, int slaveId, int offset, Format format) {
+	public BigDecimal readHoldingRegister(ModbusMaster modbusMastar, int slaveId, int offset, ModbusFormat format) {
 		BigDecimal result = null;
 		try {
 			BaseLocator<Number> loc = BaseLocator.holdingRegister(slaveId, offset, getDataType(format));
@@ -119,7 +120,7 @@ public class Modbus4j {
 	 * @param format
 	 * @return
 	 */
-	public BigDecimal readInputRegister(ModbusMaster modbusMastar, int slaveId, int offset, Format format) {
+	public BigDecimal readInputRegister(ModbusMaster modbusMastar, int slaveId, int offset, ModbusFormat format) {
 		BigDecimal result = null;
 		try {
 			BaseLocator<Number> loc = BaseLocator.inputRegister(slaveId, offset, getDataType(format));
@@ -142,7 +143,7 @@ public class Modbus4j {
 	 * @throws ErrorResponseException
 	 * @throws ModbusTransportException
 	 */
-	public void writeCoil(ModbusMaster modbusMastar, int slaveId, int offset, Format format, boolean value) {
+	public void writeCoil(ModbusMaster modbusMastar, int slaveId, int offset, ModbusFormat format, boolean value) {
 		try {
 			BaseLocator<Boolean> loc = BaseLocator.coilStatus(slaveId, offset);
 			modbusMastar.setValue(loc, value);
@@ -168,7 +169,7 @@ public class Modbus4j {
 	 */
 	@Retryable(retryFor = { ModbusInitException.class, ModbusTransportException.class,
 			ErrorResponseException.class }, maxAttempts = 2, backoff = @Backoff(delay = 1000))
-	public void writeCoil(String ip, int port, int slaveId, int offset, Format format, boolean value)
+	public void writeCoil(String ip, int port, int slaveId, int offset, ModbusFormat format, boolean value)
 			throws ModbusInitException, ModbusTransportException, ErrorResponseException {
 		ModbusFactory modbusFactory = new ModbusFactory();
 		IpParameters params = new IpParameters();
@@ -193,7 +194,7 @@ public class Modbus4j {
 	 * @throws ErrorResponseException
 	 * @throws ModbusTransportException
 	 */
-	public void writeHoldingRegister(ModbusMaster modbusMastar, int slaveId, int offset, Format format, Number value) {
+	public void writeHoldingRegister(ModbusMaster modbusMastar, int slaveId, int offset, ModbusFormat format, Number value) {
 		try {
 			BaseLocator<Number> loc = BaseLocator.holdingRegister(slaveId, offset, getDataType(format));
 			modbusMastar.setValue(loc, value);
@@ -219,7 +220,7 @@ public class Modbus4j {
 	 */
 	@Retryable(retryFor = { ModbusInitException.class, ModbusTransportException.class,
 			ErrorResponseException.class }, maxAttempts = 2, backoff = @Backoff(delay = 1000))
-	public void writeHoldingRegister(String ip, int port, int slaveId, int offset, Format format, Number value)
+	public void writeHoldingRegister(String ip, int port, int slaveId, int offset, ModbusFormat format, Number value)
 			throws ModbusInitException, ModbusTransportException, ErrorResponseException {
 		ModbusFactory modbusFactory = new ModbusFactory();
 		IpParameters params = new IpParameters();
@@ -248,25 +249,25 @@ public class Modbus4j {
 	 * @param format
 	 * @return DataType
 	 */
-	public int getDataType(Format format) {
+	public int getDataType(ModbusFormat format) {
 		int result = 0;
 		switch (format) {
-		case signed:
+		case SINGNED:
 			result = DataType.TWO_BYTE_INT_SIGNED;
 			break;
-		case unsigned:
+		case UNSINGNED:
 			result = DataType.TWO_BYTE_INT_UNSIGNED;
 			break;
-		case floatABCD:
+		case FLOAT_ABCD:
 			result = DataType.FOUR_BYTE_FLOAT;
 			break;
-		case floatCDAB:
+		case FLOAT_CDAB:
 			result = DataType.FOUR_BYTE_FLOAT_SWAPPED;
 			break;
-		case longABCD:
+		case LONG_ABCD:
 			result = DataType.FOUR_BYTE_INT_UNSIGNED;
 			break;
-		case longCDAB:
+		case LONG_CDAB:
 			result = DataType.FOUR_BYTE_INT_UNSIGNED_SWAPPED;
 		}
 

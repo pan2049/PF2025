@@ -1,5 +1,7 @@
-package tw.jdi.utils;
+package tw.jdi.utils.connect;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -17,6 +19,8 @@ import com.serotonin.bacnet4j.type.enumerated.PropertyIdentifier;
 import com.serotonin.bacnet4j.type.primitive.ObjectIdentifier;
 import com.serotonin.bacnet4j.type.primitive.Real;
 import com.serotonin.bacnet4j.util.RequestUtils;
+
+import tw.jdi.utils.SharedUtils;
 
 @Component
 public class Bacnet4j {

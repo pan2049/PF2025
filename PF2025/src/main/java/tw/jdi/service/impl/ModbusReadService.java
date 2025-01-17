@@ -12,7 +12,7 @@ import com.serotonin.modbus4j.ModbusMaster;
 
 import jakarta.annotation.Resource;
 import tw.jdi.service.ScheduleMission;
-import tw.jdi.utils.Modbus4j;
+import tw.jdi.utils.connect.Modbus4j;
 
 /**
  * Modbus設備讀取

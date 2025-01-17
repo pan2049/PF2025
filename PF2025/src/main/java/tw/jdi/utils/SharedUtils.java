@@ -130,8 +130,14 @@ public class SharedUtils {
 	public static String setToString(Set<?> set) {
 		return set.stream().map(Object::toString).collect(Collectors.joining(","));
 	}
-
 	
+	/**
+	 * 獲取 -> Logger
+	 * 
+	 * @param Class<?> c
+	 * @return Logger
+	 * @author KYUU
+	 */
 	public static Logger getLogger(Class<?> c) {
 		return LoggerFactory.getLogger(c);
 	}
