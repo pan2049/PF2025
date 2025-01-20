@@ -11,7 +11,13 @@ import org.springframework.stereotype.Service;
 import com.serotonin.modbus4j.ModbusMaster;
 
 import jakarta.annotation.Resource;
+import tw.jdi.dao.GatewayInfoDao;
+import tw.jdi.dao.ModbusPointDao;
+import tw.jdi.entity.po.GatewayInfo;
+import tw.jdi.entity.po.ModbusPoint;
 import tw.jdi.service.ScheduleMission;
+import tw.jdi.utils.SharedUtils;
+import tw.jdi.utils.cache.DeviceStateCacheManager;
 import tw.jdi.utils.connect.Modbus4j;
 
 /**
@@ -25,113 +31,114 @@ public class ModbusReadService implements ScheduleMission {
 
 	@Resource(name = "schedulePool")
 	private ScheduledExecutorService pool;
-//	@Autowired
-//	private GatewayModbusDao gatewayModbusDao;
-//	@Autowired
-//	private PointInfoModbusDao pointInfoModbusDao;
-//	@Autowired
-//	private Modbus4j modbus4j;
-//	@Autowired
-//	private DeviceStateCacheManager deviceStateCacheManager;
+	@Autowired
+	private DeviceStateCacheManager deviceStateCacheManager;
+	@Autowired
+	private GatewayInfoDao gatewayInfoDao;
+	@Autowired
+	private ModbusPointDao modbusPointDao;
+	@Autowired
+	private Modbus4j modbus4j;
+
 
 	@Override
 	public void doJob() {
-//		List<GatewayModbus> gatewayModbusList = gatewayModbusDao.selectGatewayModbus();
-//		for (GatewayModbus gatewayModbus : gatewayModbusList) {
-//			List<Integer> modbusSlaveList = pointInfoModbusDao.selectModbusSlave(gatewayModbus.getModbusNum());
-//			for (Integer modbusSlave : modbusSlaveList) {
-//				setSchedule(gatewayModbus, modbusSlave);
-//			}
-//		}
+		List<GatewayInfo> gatewayInfoList = gatewayInfoDao.selectAllGatewayInfo();
+		for (GatewayInfo gatewayInfo : gatewayInfoList) {
+			List<Integer> modbusSlaveList = modbusPointDao.selectModbusPointSlaveByGatewayId(gatewayInfo.getGatewayId());
+			for (Integer modbusSlave : modbusSlaveList) {
+				setSchedule(gatewayInfo, modbusSlave);
+			}
+		}
 	}
 
-//	/**
-//	 * 獨立線程讀取 </br>
-//	 * 細分致設備站點，所以同一站點內部點數越多速度越慢
-//	 * 
-//	 * @param GatewayModbus gatewayModbus
-//	 * @param Integer       modbusSlave
-//	 */
-//	public void setSchedule(GatewayModbus gatewayModbus, Integer modbusSlave) {
-//		ModbusMaster modbusMaster = modbus4j.getLocalMaster(gatewayModbus.getModbusIpv4(),
-//				gatewayModbus.getModbusPort());
-//		pool.scheduleWithFixedDelay(new Runnable() {
-//			@Override
-//			public void run() {
-//				List<PointInfoModbus> pointInfoModbusList = pointInfoModbusDao
-//						.selectPointModbus(gatewayModbus.getModbusNum(), modbusSlave);
-//				for (PointInfoModbus pointInfoModbus : pointInfoModbusList) {
-//					saveData(checkModbusMaster(modbusMaster, gatewayModbus), pointInfoModbus, modbusSlave);
-//				}
-//			}
-//		}, 0, 100, TimeUnit.MILLISECONDS);
-//	}
-//
-//	/**
-//	 * Modbus4j實際運用
-//	 * 
-//	 * @param ModbusMaster    master
-//	 * @param PointInfoModbus pointInfoModbus
-//	 * @param Integer         slave
-//	 */
-//	public void saveData(ModbusMaster master, PointInfoModbus pointInfoModbus, Integer slave) {
-//		switch (pointInfoModbus.getModbusFunction()) {
-//		case coils:
-//			Boolean coilsValue = modbus4j.readCoils(master, slave, pointInfoModbus.getModbusAddress());
-//			// save cache
-//			if (coilsValue == null) {
-//				deviceStateCacheManager.setDisconnect(pointInfoModbus);
-//			} else {
-//				deviceStateCacheManager.setCache(pointInfoModbus, coilsValue);
-//			}
-//			break;
-//		case discrete:
-//			Boolean discreteValue = modbus4j.readStatus(master, slave, pointInfoModbus.getModbusAddress());
-//			// save cache
-//			if (discreteValue == null) {
-//				deviceStateCacheManager.setDisconnect(pointInfoModbus);
-//			} else {
-//				deviceStateCacheManager.setCache(pointInfoModbus, discreteValue);
-//			}
-//			break;
-//		case holding:
-//			BigDecimal holdingValue = modbus4j.readHoldingRegister(master, slave, pointInfoModbus.getModbusAddress(),
-//					pointInfoModbus.getModbusFormat());
-//			// save cache
-//			if (holdingValue == null) {
-//				deviceStateCacheManager.setDisconnect(pointInfoModbus);
-//			} else {
-//				deviceStateCacheManager.setCache(pointInfoModbus, SharedUtils.convertValue(holdingValue,
-//						pointInfoModbus.getCalSign(), pointInfoModbus.getConvertValue()));
-//			}
-//			break;
-//		case input:
-//			BigDecimal inputValue = modbus4j.readInputRegister(master, slave, pointInfoModbus.getModbusAddress(),
-//					pointInfoModbus.getModbusFormat());
-//			// save cache
-//			if (inputValue == null) {
-//				deviceStateCacheManager.setDisconnect(pointInfoModbus);
-//			} else {
-//				deviceStateCacheManager.setCache(pointInfoModbus, SharedUtils.convertValue(inputValue,
-//						pointInfoModbus.getCalSign(), pointInfoModbus.getConvertValue()));
-//			}
-//			break;
-//		}
-//	}
-//
-//	/**
-//	 * 不斷線除除非沒有連線，重新連線
-//	 * 
-//	 * @param ModbusMaster  modbusMaster
-//	 * @param GatewayModbus gatewayModbus
-//	 * @return ModbusMaster
-//	 */
-//	public ModbusMaster checkModbusMaster(ModbusMaster modbusMaster, GatewayModbus gatewayModbus) {
-//		if (modbusMaster == null || !modbusMaster.isConnected()) {
-//			return modbus4j.getLocalMaster(gatewayModbus.getModbusIpv4(), gatewayModbus.getModbusPort());
-//		} else {
-//			return modbusMaster;
-//		}
-//	}
+	/**
+	 * 獨立線程讀取 </br>
+	 * 細分致設備站點，所以同一站點內部點數越多速度越慢
+	 * 
+	 * @param GatewayInfo gatewayInfo
+	 * @param Integer     modbusSlave
+	 */
+	public void setSchedule(GatewayInfo gatewayInfo, Integer modbusSlave) {
+		ModbusMaster modbusMaster = modbus4j.getLocalMaster(gatewayInfo.getIp(),
+				gatewayInfo.getPort());
+		pool.scheduleWithFixedDelay(new Runnable() {
+			@Override
+			public void run() {
+				List<ModbusPoint> modbusPointList = modbusPointDao
+						.selectModbusPointByGatewayAndSlave(gatewayInfo.getGatewayId(), modbusSlave);
+				for (ModbusPoint modbusPoint : modbusPointList) {
+					saveData(checkModbusMaster(modbusMaster, gatewayInfo), modbusPoint, modbusSlave);
+				}
+			}
+		}, 0, 100, TimeUnit.MILLISECONDS);
+	}
+
+	/**
+	 * Modbus4j實際運用
+	 * 
+	 * @param ModbusMaster    master
+	 * @param PointInfoModbus pointInfoModbus
+	 * @param Integer         slave
+	 */
+	public void saveData(ModbusMaster master, ModbusPoint modbusPoint, Integer slave) {
+		switch (modbusPoint.getFunction()) {
+		case COIL -> {
+			Boolean coilsValue = modbus4j.readCoils(master, slave, modbusPoint.getAddress());
+			// save cache
+			if (coilsValue == null) {
+				deviceStateCacheManager.setDisconnect(modbusPoint);
+			} else {
+				deviceStateCacheManager.setCache(modbusPoint, coilsValue);
+			}			
+		}
+		case DISCRETE -> {
+			Boolean discreteValue = modbus4j.readStatus(master, slave, modbusPoint.getAddress());
+			// save cache
+			if (discreteValue == null) {
+				deviceStateCacheManager.setDisconnect(modbusPoint);
+			} else {
+				deviceStateCacheManager.setCache(modbusPoint, discreteValue);
+			}			
+		}
+		case HOLDING -> {
+			BigDecimal holdingValue = modbus4j.readHoldingRegister(master, slave, modbusPoint.getAddress(),
+					modbusPoint.getFormat());
+			// save cache
+			if (holdingValue == null) {
+				deviceStateCacheManager.setDisconnect(modbusPoint);
+			} else {
+				deviceStateCacheManager.setCache(modbusPoint, SharedUtils.convertValue(holdingValue,
+						modbusPoint.getArithmetic(), modbusPoint.getCorrect()));
+			}			
+		}
+		case INPUT -> {
+			BigDecimal inputValue = modbus4j.readInputRegister(master, slave, modbusPoint.getAddress(),
+					modbusPoint.getFormat());
+			// save cache
+			if (inputValue == null) {
+				deviceStateCacheManager.setDisconnect(modbusPoint);
+			} else {
+				deviceStateCacheManager.setCache(modbusPoint, SharedUtils.convertValue(inputValue,
+						modbusPoint.getArithmetic(), modbusPoint.getCorrect()));
+			}			
+		}
+		}
+	}
+
+	/**
+	 * 不斷線除除非沒有連線，重新連線
+	 * 
+	 * @param ModbusMaster  modbusMaster
+	 * @param GatewayModbus gatewayModbus
+	 * @return ModbusMaster
+	 */
+	public ModbusMaster checkModbusMaster(ModbusMaster modbusMaster, GatewayInfo gatewayInfo) {
+		if (modbusMaster == null || !modbusMaster.isConnected()) {
+			return modbus4j.getLocalMaster(gatewayInfo.getIp(), gatewayInfo.getPort());
+		} else {
+			return modbusMaster;
+		}
+	}
 
 }

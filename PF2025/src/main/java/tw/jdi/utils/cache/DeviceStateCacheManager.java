@@ -37,6 +37,7 @@ public class DeviceStateCacheManager extends Cache<CacheKeyPair, DeviceState>{
 	@Autowired
 	private ObjectMapper objectMapper;
 	
+	@Autowired
 	public void init() {
 		setViewPointSchedule();
 		setControlPointSchedule();

@@ -15,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import tw.jdi.entity.enumEntity.Arithmetic;
 import tw.jdi.entity.po.PointInfo;
 import tw.jdi.utils.cache.CacheKeyPair;
 
@@ -78,22 +79,26 @@ public class SharedUtils {
 	 * 工具 -> [四則]運算 -> [四捨五入]到[小數點後兩位]
 	 * 
 	 * @param BigDecimal readValue
-	 * @param String     calSign
-	 * @param Double     convertMerge
-	 * @return Double
+	 * @param Arithmetic arithmetic
+	 * @param Float     convertMerge
+	 * @return Float
 	 */
-	public static Double convertValue(BigDecimal readValue, String calSign, Double convertMerge) {
-		switch (calSign) {
-		case "+":
-			return readValue.add(new BigDecimal(convertMerge)).setScale(2, RoundingMode.HALF_UP).doubleValue();
-		case "-":
-			return readValue.subtract(new BigDecimal(convertMerge)).setScale(2, RoundingMode.HALF_UP).doubleValue();
-		case "*":
-			return readValue.multiply(new BigDecimal(convertMerge)).setScale(2, RoundingMode.HALF_UP).doubleValue();
-		case "/":
-			return readValue.divide(new BigDecimal(convertMerge), 2, RoundingMode.HALF_UP).doubleValue();
+	public static Float convertValue(BigDecimal readValue, Arithmetic arithmetic, Float convertMerge) {
+		switch (arithmetic) {
+		case ADD -> {
+			return readValue.add(new BigDecimal(convertMerge)).setScale(2, RoundingMode.HALF_UP).floatValue();			
 		}
-		return readValue.setScale(2, RoundingMode.HALF_UP).doubleValue();
+		case SUB -> {
+			return readValue.subtract(new BigDecimal(convertMerge)).setScale(2, RoundingMode.HALF_UP).floatValue();		
+		}
+		case MULT -> {
+			return readValue.multiply(new BigDecimal(convertMerge)).setScale(2, RoundingMode.HALF_UP).floatValue();		
+		}
+		case DIV -> {
+			return readValue.divide(new BigDecimal(convertMerge), 2, RoundingMode.HALF_UP).floatValue();			
+		}
+		}
+		return readValue.setScale(2, RoundingMode.HALF_UP).floatValue();
 	}
 
 	/**
