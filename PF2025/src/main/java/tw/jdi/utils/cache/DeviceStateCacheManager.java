@@ -6,7 +6,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,6 +15,7 @@ import jakarta.annotation.Resource;
 import tw.jdi.entity.enumEntity.IoType.ViewType;
 import tw.jdi.entity.po.DeviceState;
 import tw.jdi.entity.po.PointInfo;
+import tw.jdi.service.ScheduleMission;
 import tw.jdi.utils.SharedUtils;
 import tw.jdi.utils.websocket.ControlWebsocketCache;
 import tw.jdi.utils.websocket.ViewWebsocketCache;
@@ -25,8 +26,8 @@ import tw.jdi.utils.websocket.ViewWebsocketCache;
  * 
  * @author PAN
  */
-@Component
-public class DeviceStateCacheManager extends Cache<CacheKeyPair, DeviceState>{
+@Service
+public class DeviceStateCacheManager extends Cache<CacheKeyPair, DeviceState> implements ScheduleMission {
 
 	@Resource(name = "schedulePool")
 	private ScheduledExecutorService pool;
@@ -37,8 +38,8 @@ public class DeviceStateCacheManager extends Cache<CacheKeyPair, DeviceState>{
 	@Autowired
 	private ObjectMapper objectMapper;
 	
-	@Autowired
-	public void init() {
+	@Override
+	public void doJob() {
 		setViewPointSchedule();
 		setControlPointSchedule();
 	}

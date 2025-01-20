@@ -161,6 +161,23 @@ public class SharedUtils {
 		return sdf.format(date);
 	}
 	
+	/**
+	 * 工具 -> 取得系統時間，秒數皆為00
+	 * 
+	 * @return
+	 */
+	public static String getSystemTimeSecondZero() {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:00");
+		Date date = new Date();
+		return sdf.format(date);
+	}
+	
+	/**
+	 * create pair key
+	 * 
+	 * @param pointInfo
+	 * @return
+	 */
 	public static CacheKeyPair createKeyPair(PointInfo pointInfo) {
 		return new CacheKeyPair(
 				pointInfo.getIoType().getViewType(), pointInfo.getPointId());
