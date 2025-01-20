@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import tw.jdi.entity.po.AlertSet.AlertStatus;
+import tw.jdi.entity.enumEntity.AlertStatus;
 
 @Data
 @EqualsAndHashCode(callSuper=false)

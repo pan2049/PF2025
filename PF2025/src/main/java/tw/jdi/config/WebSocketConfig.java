@@ -6,8 +6,11 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
+import tw.jdi.utils.websocket.ControlWebsocketHandler;
+import tw.jdi.utils.websocket.ViewWebsocketHandler;
+
 /**
- * [WebSocket]的配置
+ * [WebSocket] config
  * 
  * @author PAN
  */
@@ -16,14 +19,17 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer {
 
-//	@Autowired
-//	private MonitorPointWebSocketHandler monitorPointWebSocketHandler;
+	@Autowired
+	private ViewWebsocketHandler viewWebsocketHandler;
+	@Autowired
+	private ControlWebsocketHandler controlWebsocketHandler;
 
 	@Override
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-		// [監視點]WebSocket -> 每秒傳送更新
-//		registry.addHandler(monitorPointWebSocketHandler, "/api/monitor_point").setAllowedOrigins("*");
-
+		// [view]Websocket
+		registry.addHandler(viewWebsocketHandler, "/api/view").setAllowedOrigins("*");
+		// [control]Websocket
+		registry.addHandler(controlWebsocketHandler, "/api/control").setAllowedOrigins("*");
 	}
 
 }

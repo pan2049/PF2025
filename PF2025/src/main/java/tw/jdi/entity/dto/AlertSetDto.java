@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import tw.jdi.entity.po.AlertSet.AlertStatus;
+import tw.jdi.entity.enumEntity.AlertStatus;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)

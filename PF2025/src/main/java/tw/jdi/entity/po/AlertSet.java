@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import tw.jdi.entity.enumEntity.AlertStatus;
 
 @Data
 @EqualsAndHashCode(callSuper=false)
@@ -17,8 +18,5 @@ public class AlertSet extends PointInfo{
 	private Float alertUpper;
 	private Float alertLower;
 	private String updateTime;
-	
-	public enum AlertStatus{
-		ON, OFF
-	}
+
 }

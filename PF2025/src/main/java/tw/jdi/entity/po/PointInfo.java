@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import tw.jdi.entity.enumEntity.Arithmetic;
+import tw.jdi.entity.enumEntity.IoType;
 
 @Data
 @EqualsAndHashCode(callSuper=false)
@@ -17,12 +19,4 @@ public class PointInfo extends DeviceInfo{
 	private Arithmetic arithmetic;
 	private Float correct;
 	private String unit;
-	
-	public enum IoType{
-		DI, DO, AI, AO
-	}
-	
-	public enum Arithmetic{
-		ADD, SUB, MULT, DIV
-	}
 }

@@ -1,4 +1,4 @@
-package tw.jdi.utils;
+package tw.jdi.utils.cache;
 
 import java.util.Collection;
 import java.util.Map;
