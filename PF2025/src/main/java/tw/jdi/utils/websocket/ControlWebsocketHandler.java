@@ -29,9 +29,7 @@ public class ControlWebsocketHandler extends TextWebSocketHandler{
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) {
 		System.out.println(session.getId() + " -> Connection Established");
-		controlWebsocketCache.setData(session.getId(), new CustomWebSocketSession()
-				.setSession(session)
-				.init());
+		controlWebsocketCache.setData(session.getId(), new CustomWebSocketSession().setSession(session));
 	}
 	
 	@Override

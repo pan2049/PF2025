@@ -19,7 +19,7 @@ public class DeviceState {
 	@JsonProperty(value = "state")
 	private Boolean state;
 	@JsonProperty(value = "value")
-	private Double value;
+	private Float value;
 	@JsonProperty(value = "alert")
 	private Integer alert;
 
@@ -35,7 +35,7 @@ public class DeviceState {
 		return this;
 	}
 
-	public DeviceState setValue(Double value) {
+	public DeviceState setValue(Float value) {
 		this.value = value;
 		disconnect = false;
 		step = 0;
