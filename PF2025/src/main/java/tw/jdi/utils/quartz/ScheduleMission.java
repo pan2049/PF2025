@@ -1,4 +1,4 @@
-package tw.jdi.service;
+package tw.jdi.utils.quartz;
 
 public interface ScheduleMission {
 

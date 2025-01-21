@@ -2,11 +2,13 @@ package tw.jdi.utils.websocket;
 
 import java.io.IOException;
 
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 
 import tw.jdi.utils.SharedUtils;
 import tw.jdi.utils.cache.Cache;
 
+@Component
 public class ControlWebsocketCache extends Cache<String, CustomWebSocketSession>{
 
 	/**

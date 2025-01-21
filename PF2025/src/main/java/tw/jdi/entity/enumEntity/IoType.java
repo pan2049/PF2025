@@ -1,16 +1,22 @@
 package tw.jdi.entity.enumEntity;
 
-public enum IoType{
+public enum IoType {
 	
-	DI(ViewType.VIEW), 
-	DO(ViewType.CONTROL), 
-	AI(ViewType.VIEW), 
-	AO(ViewType.CONTROL);
+	DI(SignalType.DIGITAL, ViewType.VIEW), 
+	DO(SignalType.DIGITAL, ViewType.CONTROL), 
+	AI(SignalType.ANALOG, ViewType.VIEW), 
+	AO(SignalType.ANALOG, ViewType.CONTROL);
 	
+	private SignalType signalType;
 	private ViewType viewType;
 	
-	IoType(ViewType viewType) {
+	IoType(SignalType signalType, ViewType viewType) {
+		this.signalType = signalType;
 		this.viewType = viewType;
+	}
+	
+	public SignalType getSignalType() {
+		return signalType;
 	}
 	
 	public ViewType getViewType() {
@@ -20,5 +26,9 @@ public enum IoType{
 	
 	public enum ViewType {
 		VIEW, CONTROL
+	}
+	
+	public enum SignalType{
+		ANALOG, DIGITAL
 	}
 }

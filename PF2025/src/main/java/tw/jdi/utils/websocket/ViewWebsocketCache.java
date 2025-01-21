@@ -2,6 +2,7 @@ package tw.jdi.utils.websocket;
 
 import java.io.IOException;
 
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -13,6 +14,7 @@ import tw.jdi.utils.cache.Cache;
  * 
  * @author PAN
  */
+@Component
 public class ViewWebsocketCache extends Cache<String, WebSocketSession>{
 
 	/**

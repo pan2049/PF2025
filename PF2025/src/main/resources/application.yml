@@ -28,3 +28,12 @@ server:
 #    key-store-type: PKCS12
 #    protocol: TLS
 #    enabled-protocols: TLSv1.2
+
+### 自定義參數寫死區，無存取資料庫的資料
+public:
+  # Bacnet -> 本地虛擬設備參數[本機IP/子網路遮罩/port/虛擬本機ID(隨意)]
+  bacnet:
+    local-ip: 192.168.1.217
+    subnet: 255.255.255.0
+    port: 47808
+    device-id: 123456

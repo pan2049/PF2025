@@ -15,10 +15,10 @@ import tw.jdi.dao.GatewayInfoDao;
 import tw.jdi.dao.ModbusPointDao;
 import tw.jdi.entity.po.GatewayInfo;
 import tw.jdi.entity.po.ModbusPoint;
-import tw.jdi.service.ScheduleMission;
 import tw.jdi.utils.SharedUtils;
 import tw.jdi.utils.cache.DeviceStateCacheManager;
 import tw.jdi.utils.connect.Modbus4j;
+import tw.jdi.utils.quartz.ScheduleMission;
 
 /**
  * Modbus設備讀取

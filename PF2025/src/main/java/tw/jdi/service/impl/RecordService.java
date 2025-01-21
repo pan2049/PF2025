@@ -1,12 +1,19 @@
 package tw.jdi.service.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import tw.jdi.dao.PointInfoDao;
 import tw.jdi.dao.RecordDao;
-import tw.jdi.service.ScheduleMission;
+import tw.jdi.entity.enumEntity.IoType;
+import tw.jdi.entity.po.DeviceState;
+import tw.jdi.entity.po.PointInfo;
 import tw.jdi.utils.SharedUtils;
+import tw.jdi.utils.cache.CacheKeyPair;
 import tw.jdi.utils.cache.DeviceStateCacheManager;
+import tw.jdi.utils.quartz.ScheduleMission;
 
 @Service
 public class RecordService implements ScheduleMission {
@@ -21,49 +28,38 @@ public class RecordService implements ScheduleMission {
 	@Override
 	public void doJob() {
 		String systemTime = SharedUtils.getSystemTimeSecondZero();
-		List<PointInfo> pointList = pointInfoDao.selectPointInfo();
+		List<PointInfo> pointList = pointInfoDao.selectAllPointId();
 		DeviceState deviceState = null;
-		String systemName = null;
-		String areaName = null;
-		SignalType signalType = null;
-		Integer pointNum = null;
-		try {
-			for (PointInfo pointInfo : pointList) {
-				systemName = pointInfo.getSystemName();
-				areaName = pointInfo.getAreaName();
-				signalType = pointInfo.getSignalType();
-				pointNum = pointInfo.getPointNum();
-				deviceState = deviceStateCacheManager
-						.getData(new CacheKeyPair(systemName, areaName, signalType.getType(), pointNum));
-				// 如果設備斷線掠過不紀錄
-				if (deviceState == null) {
-					continue;
-				}
-				if (deviceState.getDisconnect()) {
-					continue;
-				}
-				switch (signalType) {
-				case DI, DO:
-					// 判斷是否程式剛啟動還沒連上線 狀態
-					if (deviceState.getState() == null) {
-						continue;
-					}
-					recordGeneralDao.insertRecordGeneral(pointNum, systemTime, deviceState.getState(), null);
-					break;
-				case AI, AO:
-					// 判斷是否程式剛啟動還沒連上線 數值
-					if (deviceState.getValue() == null) {
-						continue;
-					}
-					recordGeneralDao.insertRecordGeneral(pointNum, systemTime, null,
-							deviceState.getValue().doubleValue());
-					break;
-				default:
-					break;
+		IoType ioType = null;
+		Integer pointId = null;
+		Boolean state = null;
+		Float value = null;
+		for (PointInfo pointInfo : pointList) {
+			pointId = pointInfo.getPointId();
+			ioType = pointInfo.getIoType();
+			deviceState = deviceStateCacheManager
+					.getData(new CacheKeyPair<IoType.ViewType, Integer>(ioType.getViewType(), pointId));
+			// 如果設備斷線掠過不紀錄
+			if (deviceState == null) {
+				continue;
+			}
+			if (deviceState.getDisconnect()) {
+				continue;
+			}
+			switch(ioType) {
+			case DI, DO -> {
+				state = deviceState.getState();
+				if(state != null) {
+					recordDao.insertRecord(pointId, ioType, state, systemTime);
 				}
 			}
-		} catch (Exception e) {
-			SharedUtils.getLogger(this.getClass()).error(e.getLocalizedMessage());
+			case AI, AO -> {
+				value = deviceState.getValue();
+				if(value != null) {
+					recordDao.insertRecord(pointId, ioType, value, systemTime);
+				}
+			}
+			}
 		}
 	}
 

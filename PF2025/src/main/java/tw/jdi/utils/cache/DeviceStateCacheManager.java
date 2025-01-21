@@ -15,8 +15,8 @@ import jakarta.annotation.Resource;
 import tw.jdi.entity.enumEntity.IoType.ViewType;
 import tw.jdi.entity.po.DeviceState;
 import tw.jdi.entity.po.PointInfo;
-import tw.jdi.service.ScheduleMission;
 import tw.jdi.utils.SharedUtils;
+import tw.jdi.utils.quartz.ScheduleMission;
 import tw.jdi.utils.websocket.ControlWebsocketCache;
 import tw.jdi.utils.websocket.ViewWebsocketCache;
 
@@ -27,7 +27,7 @@ import tw.jdi.utils.websocket.ViewWebsocketCache;
  * @author PAN
  */
 @Service
-public class DeviceStateCacheManager extends Cache<CacheKeyPair, DeviceState> implements ScheduleMission {
+public class DeviceStateCacheManager extends Cache<CacheKeyPair<ViewType, Integer>, DeviceState> implements ScheduleMission {
 
 	@Resource(name = "schedulePool")
 	private ScheduledExecutorService pool;
@@ -77,14 +77,15 @@ public class DeviceStateCacheManager extends Cache<CacheKeyPair, DeviceState> im
 	}
 	
 	public void setCache(PointInfo pointInfo, Boolean state) {
-		CacheKeyPair pairkey = SharedUtils.createKeyPair(pointInfo);
+		CacheKeyPair<ViewType, Integer> pairkey = 
+				new CacheKeyPair<ViewType, Integer>(pointInfo.getIoType().getViewType(), pointInfo.getPointId());
 		DeviceState deviceState;
 		if (super.hasData(pairkey)) {
 			// 內存更新
 			deviceState = super.getData(pairkey);
-			switch (pairkey.getViewType()) {
+			switch (pairkey.getEntity1()) {
 			case VIEW -> {
-				deviceState.setState(state);				
+				deviceState.setState(state);
 			}
 			case CONTROL -> {
 				if (!deviceState.getState().equals(state)) {
@@ -98,7 +99,7 @@ public class DeviceStateCacheManager extends Cache<CacheKeyPair, DeviceState> im
 			// 內存物件初始話
 			deviceState = new DeviceState().setState(state);
 			super.setData(pairkey, deviceState);
-			switch (pairkey.getViewType()) {
+			switch (pairkey.getEntity1()) {
 			case CONTROL -> {
 				// 因CONTROL控制點更新故更新前端
 				updateControlChannelData(pairkey, deviceState);			
@@ -109,12 +110,13 @@ public class DeviceStateCacheManager extends Cache<CacheKeyPair, DeviceState> im
 	}
 	
 	public void setCache(PointInfo pointInfo, Float value) {
-		CacheKeyPair pairkey = SharedUtils.createKeyPair(pointInfo);
+		CacheKeyPair<ViewType, Integer> pairkey = 
+				new CacheKeyPair<ViewType, Integer>(pointInfo.getIoType().getViewType(), pointInfo.getPointId());
 		DeviceState deviceState;
 		if (super.hasData(pairkey)) {
 			// 內存更新
 			deviceState = super.getData(pairkey);
-			switch (pairkey.getViewType()) {
+			switch (pairkey.getEntity1()) {
 			case VIEW -> {
 				deviceState.setValue(value);			
 			}
@@ -130,7 +132,7 @@ public class DeviceStateCacheManager extends Cache<CacheKeyPair, DeviceState> im
 			// 內存物件初始話
 			deviceState = new DeviceState().setValue(value);
 			super.setData(pairkey, deviceState);
-			switch (pairkey.getViewType()) {
+			switch (pairkey.getEntity1()) {
 			case CONTROL -> {
 				// 因CONTROL控制點更新故更新前端
 				updateControlChannelData(pairkey, deviceState);			
@@ -141,7 +143,8 @@ public class DeviceStateCacheManager extends Cache<CacheKeyPair, DeviceState> im
 	}
 	
 	public void setDisconnect(PointInfo pointInfo) {
-		CacheKeyPair pairkey = SharedUtils.createKeyPair(pointInfo);
+		CacheKeyPair<ViewType, Integer> pairkey = 
+				new CacheKeyPair<ViewType, Integer>(pointInfo.getIoType().getViewType(), pointInfo.getPointId());
 		DeviceState deviceState;
 		if (super.hasData(pairkey)) {
 			// 內存更新
@@ -153,7 +156,7 @@ public class DeviceStateCacheManager extends Cache<CacheKeyPair, DeviceState> im
 			super.setData(pairkey, deviceState);
 		}
 		
-		switch (pairkey.getViewType()) {
+		switch (pairkey.getEntity1()) {
 		case CONTROL -> {
 			// 因CONTROL控制點更新故更新前端
 			updateControlChannelData(pairkey, deviceState);
@@ -164,18 +167,18 @@ public class DeviceStateCacheManager extends Cache<CacheKeyPair, DeviceState> im
 	
 	public Map<Integer, DeviceState> getCacheByViewType(ViewType viewType) {
 		Map<Integer, DeviceState> result = new HashMap<>();
-		for (CacheKeyPair keyPair : super.getAllKey()) {
-			if(keyPair.getViewType().equals(viewType)) {
-				result.put(keyPair.getPointId(), super.getData(keyPair));
+		for (CacheKeyPair<ViewType, Integer> keyPair : super.getAllKey()) {
+			if(keyPair.getEntity1().equals(viewType)) {
+				result.put(keyPair.getEntity2(), super.getData(keyPair));
 			}
 		}
 		return result;
 	}
 	
-	public void updateControlChannelData(CacheKeyPair pairKey, DeviceState deviceState) {
+	public void updateControlChannelData(CacheKeyPair<ViewType, Integer> pairKey, DeviceState deviceState) {
 		String message = "";
 		Map<Integer, DeviceState> map = new HashMap<>();
-		map.put(pairKey.getPointId(), deviceState);
+		map.put(pairKey.getEntity2(), deviceState);
 		try {
 			message = objectMapper.writeValueAsString(map);
 		} catch (JsonProcessingException e) {

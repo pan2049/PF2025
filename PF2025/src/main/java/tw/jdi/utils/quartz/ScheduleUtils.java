@@ -1,12 +1,9 @@
-package tw.jdi.utils;
+package tw.jdi.utils.quartz;
 
 import org.quartz.CronScheduleBuilder;
-import org.quartz.Job;
 import org.quartz.JobBuilder;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -15,7 +12,7 @@ import org.quartz.TriggerBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import tw.jdi.service.ScheduleMission;
+import tw.jdi.utils.SharedUtils;
 
 /**
  * [排程]的工具
@@ -29,21 +26,6 @@ public class ScheduleUtils {
 	@Autowired
 	private Scheduler scheduler;
 
-	public class ScheduleJob implements Job {
-
-		@Override
-		public void execute(JobExecutionContext context) throws JobExecutionException {
-			JobDataMap jobDataMap = context.getMergedJobDataMap();
-			ScheduleMission scheduleMission = (ScheduleMission) jobDataMap.get("scheduleMission");
-			try {
-				scheduleMission.doJob();
-			} catch (Exception e) {
-				SharedUtils.getLogger(this.getClass()).error(e.getLocalizedMessage());
-				e.printStackTrace();
-			}
-		}
-	}
-	
 	/**
 	 * 工具 -> [部署]排程
 	 * 

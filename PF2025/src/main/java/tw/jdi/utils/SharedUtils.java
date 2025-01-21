@@ -16,6 +16,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import tw.jdi.entity.enumEntity.Arithmetic;
+import tw.jdi.entity.enumEntity.IoType;
 import tw.jdi.entity.po.PointInfo;
 import tw.jdi.utils.cache.CacheKeyPair;
 
@@ -171,16 +172,6 @@ public class SharedUtils {
 		Date date = new Date();
 		return sdf.format(date);
 	}
-	
-	/**
-	 * create pair key
-	 * 
-	 * @param pointInfo
-	 * @return
-	 */
-	public static CacheKeyPair createKeyPair(PointInfo pointInfo) {
-		return new CacheKeyPair(
-				pointInfo.getIoType().getViewType(), pointInfo.getPointId());
-	}
+
 
 }
