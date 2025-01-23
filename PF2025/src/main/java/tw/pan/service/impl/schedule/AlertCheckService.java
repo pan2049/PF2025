@@ -17,8 +17,14 @@ import tw.pan.utils.SharedUtils;
 import tw.pan.utils.cache.Cache;
 import tw.pan.utils.cache.CustomKeyPair;
 import tw.pan.utils.cache.DeviceStateCacheManager;
+import tw.pan.utils.discord.DiscordService;
 import tw.pan.utils.quartz.ScheduleMission;
 
+/**
+ * Point alert check service
+ * 
+ * @author PAN
+ */
 @Service
 public class AlertCheckService extends Cache<CustomKeyPair<SignalType, Integer>, Integer> implements ScheduleMission {
 
@@ -28,6 +34,8 @@ public class AlertCheckService extends Cache<CustomKeyPair<SignalType, Integer>,
 	private AlertRecordDao alertRecordDao;
 	@Autowired
 	private DeviceStateCacheManager deviceStateCacheManager;
+	@Autowired
+	private DiscordService discordService;
 	
 	@Autowired
 	private void initMap() {
@@ -84,12 +92,14 @@ public class AlertCheckService extends Cache<CustomKeyPair<SignalType, Integer>,
 					if(!super.hasData(alertTagKey)) {
 						Integer alertId = alertRecordDao.insertAlertRecordDIO(pointId, state);
 						super.setData(alertTagKey, alertId);
+						discordService.sendDIOAlertMessage(alertSet.getPointName(), state, true);
 					}
 				}else {
 					if(super.hasData(alertTagKey)) {
 						Integer alertId = super.getData(alertTagKey);
 						alertRecordDao.updateAlertRecordDIO(alertId, SharedUtils.getSystemTime());
 						super.removeData(alertTagKey);
+						discordService.sendDIOAlertMessage(alertSet.getPointName(), state, false);
 					}
 				}
 			}
@@ -99,6 +109,7 @@ public class AlertCheckService extends Cache<CustomKeyPair<SignalType, Integer>,
 					Integer alertId = super.getData(alertTagKey);
 					alertRecordDao.updateAlertRecordDIO(alertId, SharedUtils.getSystemTime());
 					super.removeData(alertTagKey);
+					discordService.sendDIOAlertMessage(alertSet.getPointName(), state, false);
 				}
 			}
 			}
@@ -138,12 +149,14 @@ public class AlertCheckService extends Cache<CustomKeyPair<SignalType, Integer>,
 					if(!super.hasData(alertTagKey)) {
 						Integer alertId = alertRecordDao.insertAlertRecordAIO(pointId, value);
 						super.setData(alertTagKey, alertId);
+						discordService.sendAIOAlertMessage(alertSet.getPointName(), value, true);
 					}
 				}else {
 					if(super.hasData(alertTagKey)) {
 						Integer alertId = super.getData(alertTagKey);
 						alertRecordDao.updateAlertRecordAIO(alertId, SharedUtils.getSystemTime());
 						super.removeData(alertTagKey);
+						discordService.sendAIOAlertMessage(alertSet.getPointName(), value, false);
 					}
 				}
 			}
@@ -153,6 +166,7 @@ public class AlertCheckService extends Cache<CustomKeyPair<SignalType, Integer>,
 					Integer alertId = super.getData(alertTagKey);
 					alertRecordDao.updateAlertRecordAIO(alertId, SharedUtils.getSystemTime());
 					super.removeData(alertTagKey);
+					discordService.sendAIOAlertMessage(alertSet.getPointName(), value, false);
 				}
 			}
 			}

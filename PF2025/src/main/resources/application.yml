@@ -37,5 +37,6 @@ public:
     subnet: 255.255.255.0
     port: 47808
     device-id: 123456
-  token:
-    discord: myToken
+  discord:
+    token: myToken
+    channel-id: id
