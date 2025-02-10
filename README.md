@@ -1,93 +1,75 @@
 # PanHouseFarmAssistant
 
-## 專案描述
+* [English](README.md)
+* [繁體中文版README.md](README.zh-TW.md)
+* [日本語版README.md](README.jp.md)
 
-PanHouseFarmAssistant 是一個結合物聯網（IoT）技術的簡易中央監控系統（Center Management System），用於讀取感測器狀態與數值並對設備進行控制，實現家庭庭院的土壤濕度監控。系統設置了土壤濕度感測器（Soil Moisture Sensor），透過 IO 接收模組（IO Module）接收感測器訊號，並經由 Ethernet 傳輸至 Server。此外，用戶可透過遠端控制水閥以補充土壤水分。
+## Project Description
+PanHouseFarmAssistant is a simple center management system that integrates IoT technology to read sensor data and control devices. The project is designed for soil moisture monitoring in a home garden. A soil moisture sensor is deployed in the garden to measure soil moisture levels, and the data is received by an IO Module. The IO Module then transmits the data to the server via Ethernet, allowing remote control of the water valve to maintain soil moisture.
 
-## 功能介紹
+## Features
+This project provides the following features:
+1. **Real-time Monitoring** - Monitors garden soil moisture conditions.
+2. **Remote Control** - Controls the water valve remotely.
+3. **Data Collection** - Stores soil moisture data in a database.
+4. **Scheduled Control** - Automates the water valve operation at scheduled times.
+5. **Alert System** - Sends alerts when soil moisture levels are too high or too low.
+6. **Customizable Alert Thresholds** - Allows users to set a normal soil moisture range (e.g., 60%–80%) and triggers alerts when values exceed this range.
+7. **Record Inquiry** - Enables users to review historical data and alert records.
 
-1. **現場狀況監控**：監控庭院土壤濕度。
-2. **遠端控制**：控制水閥開關以調節土壤濕度。
-3. **數據收集**：將土壤濕度數據存入資料庫。
-4. **排程控制**：設定固定時間開啟水閥進行灌溉。
-5. **異常發報**：在土壤濕度過高或過低時觸發警報並記錄異常。
-6. **異常範圍設定**：用戶可自定義濕度正常範圍（例如：60%-80%），超出範圍時觸發異常處理。
-7. **紀錄查詢**：可調閱歷史數據與異常記錄。
+## Technologies Used
+This project is developed in Java using the Spring Boot framework and runs on an embedded Jetty server. The following technologies are implemented for various functionalities:
 
-## 使用技術
+### Communication Protocols
+- Supports **Modbus** and **BACnet** (Building Automation and Control Networks) for communication.
+- Future updates will include **MQTT** (Message Queuing Telemetry Transport) and **ZigBee** for wireless communication.
 
-本專案使用 Java 開發，基於 Spring Boot 框架，並使用內置的 Jetty Server 運行。
-以下為主要功能與使用技術的詳細介紹：
+### Scheduling and Task Management
+- Utilizes **Quartz** for scheduling tasks and provides a simplified tool for implementation.
+- Implements **ScheduledExecutorService** to execute specific tasks at scheduled times.
 
-### 通訊技術
+### Real-time Monitoring
+- Uses a custom in-memory tool to store sensor data.
+- Transfers real-time sensor data to users via **WebSocket** technology.
 
-- **Modbus 與 BACnet**：提供這兩種通訊方式來進行資料交換。
-- **未來拓展**：後續將加入 MQTT（Message Queuing Telemetry Transport）與 ZigBee 等無線通訊技術。
+### Reliable Device Control
+- Implements **Spring Retry** to ensure retry mechanisms for device control, enhancing reliability.
 
-### 排程任務
+### Notification System
+- Uses **net.dv8tion.JDA** to send custom alert messages to Discord, notifying users of anomalies.
 
-- 使用 **Quartz** 與 **ScheduledExecutorService**，實現特定任務的定時執行。
-- 自行編輯工具方法以簡化排程任務的設定與管理。
+### Key-Value Mapping
+- Enhances Java Map key-value management using a **custom composite key** to store data efficiently, avoiding complex multi-layered Map structures.
 
-### 現場監控
+### Security and API Management
+- Provides **RESTful APIs** for project functionalities.
+- **Parameter and Object Validation**: Uses `@RequestParam` and `@RequestBody` with custom validation methods or `jakarta.validation.Valid` to prevent errors.
+- **Security Management**:
+  - **Spring Security**: Manages authentication and CORS (Cross-Origin Resource Sharing).
+  - **JSON Web Token (JWT)**: Requires token authentication for critical API endpoints.
 
-- **自定義內存工具**：暫存感測器數據。
-- **WebSocket 技術**：實現數據的即時傳輸與顯示。
+### Exception Handling
+- Uses **@ControllerAdvice** to implement a unified exception handling system for centralized error management and debugging.
 
-### 確保設備控制
+## Installation Steps
+Installation steps are not provided at the moment.
 
-- 使用 **Spring Retry**，在控制設備時實現錯誤重試機制，確保操作執行成功。
+## Usage Instructions
+Usage instructions are not provided at the moment.
 
-### 訊息推送
+## Contribution Guidelines
+Contributions to this project are welcome! If you would like to contribute, please follow these steps:
+1. Fork the repository.
+2. Create a new branch for your feature (e.g., `feature/new-functionality`).
+3. Submit a Pull Request with a detailed description of the changes.
 
-- 使用 **net.dv8tion.JDA**，實現異常訊息推送至 Discord，提醒用戶處理。
+## License
+No specific license is assigned to this project. If you wish to use or distribute this project, please contact the author for permission.
 
-### 鍵值映射
+## Additional Information
+This project prioritizes system performance and stability:
+- Database queries avoid using `*` to optimize data retrieval.
+- Uses `switch` instead of nested `if` statements to improve readability and efficiency.
+- Strictly manages variable declarations to reduce unnecessary memory consumption and prevent memory leaks.
 
-- 在 Java Map 基礎上自定義複合型 Key，簡化多層次資料的儲存方式。
-
-### 安全性管理
-
-- **Spring Security**：進行權限審核與跨域資源共享（CORS）。
-- **JSON Web Token (JWT)**：針對部分重要 API 進行權限驗證，確保資料安全。
-
-### RESTful API
-
-- 提供 API 以供用戶使用系統功能。
-- 使用 `@RequestParam` 與 `@RequestBody` 搭配 `jakarta.validation.Valid` 驗證請求參數，避免錯誤發生。
-
-### 異常處理
-
-- 使用 `@ControllerAdvice` 自定義異常攔截器，統一管理異常並方便除錯。
-
-## 安裝步驟
-
-目前暫不提供安裝步驟。
-
-## 使用方式
-
-目前暫不提供使用方式。
-
-## 貢獻指南
-
-歡迎對本專案進行貢獻！如需貢獻代碼，請遵循以下指導：
-
-1. Fork 此專案到你的儲存庫。
-2. 建立新分支進行功能開發或修復（例如：`feature/功能名稱`）。
-3. 提交 Pull Request 時，請提供詳細的修改描述。
-
-## 授權條款
-
-目前未指定授權條款。如需使用或分發此專案，請聯繫作者取得授權。
-
-## 其他資訊
-
-本專案重視系統效能與穩定性：
-
-- 資料庫查詢避免使用 `*`，確保高效資料提取。
-- 使用 `switch` 替代巢狀 `if` 結構，簡化條件判斷。
-- 嚴格管理變數宣告，避免不必要的記憶體消耗與內存洩漏。
-
-如果有任何問題或建議，歡迎聯繫作者！
-
-
+For any questions or suggestions, feel free to contact the author!
